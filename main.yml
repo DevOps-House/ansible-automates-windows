@@ -1,0 +1,49 @@
+---
+- name: Managing WINDOWS
+  hosts: windows
+  tasks:
+  - name: Set timezone to 'India Standard Time' (IST)
+    win_timezone:
+      timezone: India Standard Time
+
+  - name: Apply updates and reboot if necessary
+    win_updates:
+      category_names:
+        - SecurityUpdates
+        - CriticalUpdates
+        - UpdateRollups
+    register: out
+
+  - name: Reboot if necessary
+    win_reboot:
+    when: out.reboot_required
+        
+  - name: Install required packages 
+    win_chocolatey:
+      name: '{{ item }}'
+      state: present
+    with_items:
+      - git
+      - notepadplusplus.install
+
+  - name: Add a group
+    win_group:
+      name: Ansiblers
+      description: "Ansible for Ansiblers"
+      state: present
+
+  - name: Add a user
+    win_user:
+      name: Ansibler
+      password: ans!ble4w!ndows
+      state: present
+      groups: Ansiblers
+      group_action: add
+
+  - name: Assign user permission
+    win_acl:
+      user: Ansibler
+      path: "C:\\Users\\Public"
+      rights: FullControl
+      type: allow
+
