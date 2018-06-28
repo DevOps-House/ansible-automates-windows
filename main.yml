@@ -1,6 +1,6 @@
 ---
 - name: Managing WINDOWS
-  hosts: windows
+  hosts: all
   tasks:
   - name: Set timezone to 'India Standard Time' (IST)
     win_timezone:
